@@ -1,3 +1,4 @@
+let activeSubs = false;
 const nav = document.querySelector('.nav')
 window.addEventListener('scroll', fixNav)
 
@@ -43,7 +44,7 @@ let deckData = [];
 let revealVote = false;
 let isAdmin = false;
 
-// console.log(localData);
+console.log("Home: " + JSON.stringify(localData));
 
 async function logoutUser() {
     let param = {one:roomName, two:yourId}
@@ -289,8 +290,14 @@ async function loadData() {
     loadOnlineUsers();
 }
 
+function isUserExist() {
+    return (userName != undefined && roomName != undefined && yourId != undefined) 
+    && (userName.length > 0 && roomName.length > 0 && yourId.length > 0)
+}
+
 async function init() {
-    if (userName.length > 0 && roomName.length > 0) {
+    console.log(`>${userName}<>${roomName}<>${yourId}`);
+    if (isUserExist()) {
         loadData();
     } else {
         window.location.href = '../index.html';
@@ -304,7 +311,7 @@ init();
 
 let query = new Parse.Query('Online');
 let subscription = client.subscribe(query);
-let activeSubs = true;
+activeSubs = true;
 
 subscription.on('create', (object) => {
   console.log('object created');
@@ -345,14 +352,18 @@ subscription.on('leave', (object) => {
 
 subscription.on('delete', (object) => {
   console.log('object deleted');
-  for (var i = 0; i < onlineUsers.length; i++) {
-      let user = onlineUsers[i];
-      if (user.get('objectId') == object.get("objectId")) {
-        onlineUsers.splice(i, 1);
-        break;
+  try {
+      for (var i = 0; i < onlineUsers.length; i++) {
+          let user = onlineUsers[i];
+          if (user.get('objectId') == object.get("objectId")) {
+            onlineUsers.splice(i, 1);
+            break;
+          }
       }
+      loadOnlineUsers();
+  } catch (error) {
+    console.log(error);
   }
-  loadOnlineUsers();
 });
 
 subscription.on('close', () => {

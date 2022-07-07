@@ -7,6 +7,15 @@ labels.forEach(label => {
         .join('')
 })
 
+    var ec = new evercookie(); 
+    
+    // set a cookie "id" to "12345"
+    // usage: ec.set(key, value)
+    ec.set("id", "12345"); 
+    
+    // retrieve a cookie called "id" (simply)
+    ec.get("id", function(value) { showTimedToast("Cookie value is " + value, 1) });
+
 let localData = getLocalData()
 let userName = localData.get('name');
 let roomName = localData.get('room');
@@ -86,11 +95,17 @@ async function userEntry(roomName, userName, admin) {
     showTimedToast("Entering the room...", 0);
     const param = {one:roomName, two:userName, three:admin}
     await Parse.Cloud.run("userEntry", param).then((results)=>{
-        let user = JSON.parse(results.data);
-        saveLocalData(roomName, userName, user.objectId);
-        window.location.href = 'home/home.html';
-        btnEnter.disable = false;
-        btnCreate.disable = false;
+        if (results.success) {
+            console.log(results);
+            let user = JSON.parse(results.data);
+            saveLocalData(roomName, userName, user.objectId);
+            console.log("Login: " + JSON.stringify(getLocalData()));
+            window.location.href = 'home/home.html';
+            btnEnter.disable = false;
+            btnCreate.disable = false;
+        } else {
+            showTimedToast(results.message, 2);
+        }
     }, (error)=>{
         showToast(error, 2);
         btnEnter.disable = false;

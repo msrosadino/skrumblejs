@@ -38,12 +38,16 @@ function showTimedToast(message = null, type = null) {
 }
 
 function saveLocalData(room, name, id) {
-    let jsonData = {}
-    jsonData['room'] = room;
-    jsonData['name'] = name;
-    jsonData['id'] = id;
-    let data = JSON.stringify(jsonData);
-    localStorage.setItem('scrumble', data);
+    try {
+        let jsonData = {}
+        jsonData['room'] = room;
+        jsonData['name'] = name;
+        jsonData['id'] = id;
+        let data = JSON.stringify(jsonData);
+        localStorage.setItem('scrumble', data);
+    }catch(error) {
+        console.log("saveLocalData: " + error);
+    }
 }
 
 function clearLocalData() {
@@ -52,6 +56,7 @@ function clearLocalData() {
 
 function getLocalData() {
     let data = JSON.parse(localStorage.getItem('scrumble'));
+    console.log("LocalData: " + JSON.stringify(data));
     let result = new Map();
     
     for(var i in data){
