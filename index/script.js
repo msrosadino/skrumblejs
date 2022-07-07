@@ -7,15 +7,6 @@ labels.forEach(label => {
         .join('')
 })
 
-    var ec = new evercookie(); 
-    
-    // set a cookie "id" to "12345"
-    // usage: ec.set(key, value)
-    ec.set("id", "12345"); 
-    
-    // retrieve a cookie called "id" (simply)
-    ec.get("id", function(value) { showTimedToast("Cookie value is " + value, 1) });
-
 let localData = getLocalData()
 let userName = localData.get('name');
 let roomName = localData.get('room');
