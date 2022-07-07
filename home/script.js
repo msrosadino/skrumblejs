@@ -300,7 +300,7 @@ async function init() {
     if (isUserExist()) {
         loadData();
     } else {
-        window.location.href = '../index.html';
+        //window.location.href = '../index.html';
     }
 
 }
