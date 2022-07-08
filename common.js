@@ -14,6 +14,20 @@ spCharMap.set('1988', '∞');
 spCharMap.set('1987', '?');
 spCharMap.set('1986', '☕️');
 
+let spColorMap = new Map();
+spColorMap.set('G', 'green');
+spColorMap.set('Y', 'yellow');
+spColorMap.set('O', 'orange');
+spColorMap.set('V', 'blueviolet');
+spColorMap.set('R', 'red');
+
+let spTextColorMap = new Map();
+spTextColorMap.set('G', 'white');
+spTextColorMap.set('Y', '#6b6570');
+spTextColorMap.set('O', '#6b6570');
+spTextColorMap.set('V', 'white');
+spTextColorMap.set('R', 'white');
+
 let toasts = document.getElementById('toasts');
 let errorTypes = ['info', 'success', 'error'];
 

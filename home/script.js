@@ -86,7 +86,14 @@ function generateUserCard(online, parent) {
     const voted = revealVote || (vote == null || vote === "")
         ? 'card-box-normal' : 'card-box-voted';
 
-    let displayLabel = getSpValue(online.get("vote"));
+    const colorStyle = deckType != 'risk'
+        ? '' : (revealVote ? `style="background-color:${getColorValue(vote)}";` : '');
+
+    const colorText = deckType != 'risk'
+        ? '' : (revealVote ? `style="color:${getTextColorValue(vote)}";` : '');
+
+    let spv = getSpValue(online.get("vote"));
+    let displayLabel = deckType == 'risk' ? (isNaN(online.get("vote")) ? '' : spv) : spv;
     let hideContent = revealVote ? `<div class="vote-shown">${displayLabel}</div>`
         : `<div><object><img src="../resource/profile.png"><object></div>`;
 
@@ -95,8 +102,8 @@ function generateUserCard(online, parent) {
 
     const userCard = `
         <section>
-            <div class=${voted}>
-                <div><span>${name}</span></div>
+            <div ${colorStyle} class=${voted}>
+                <div><span ${colorText}>${name}</span></div>
                 ${hideContent}
             </div>
         </section>
@@ -137,23 +144,23 @@ function showDetails(admin) {
 
     const detailsContainer = document.getElementById('details');
     detailsContainer.innerHTML = ""
-    const detailsDiv = document.createElement('div')
 
     let dt = deckType.charAt(0).toUpperCase() + deckType.slice(1);
+    let deckDisplay = [];
+    for (var i = 0; i < deckData.length; i++) {
+        deckDisplay[i] = getSpValue(deckData[i]);
+    }
+    let strDeck = deckDisplay.join(', ');
+
+    let adminName = isAdmin ? '' : '  |  ADMIN: ' + admin.get('name');
+    let deckDetails = isAdmin ? '<br>DECK TYPE: ' + dt + ' ( ' + strDeck + ' )' : '  |  DECK TYPE: ' + dt;
+    let content = 'ROOM: ' + admin.get('room') + adminName + deckDetails;
 
     const detailsContent =`
-        <div class="details">
-            <div>Room Name : ${admin.get('room')}</div>
-            <div class="space"></div>
-            <div>Scrum Master : ${admin.get('name')}</div>
-            <div class="space"></div>
-            <div>Deck Type : ${dt}</div>
-        </div>
+        <p style="text-align:center">${content}</p>
     `;
 
-    detailsDiv.innerHTML = detailsContent
-
-    detailsContainer.appendChild(detailsDiv);
+    detailsContainer.innerHTML = detailsContent;
 
     if (isAdmin) {
         generateAdminControls();
@@ -168,6 +175,16 @@ function getSpValue(card) {
     return finalChar == null ? card : finalChar;
 }
 
+function getColorValue(card) {
+    let finalColor = spColorMap.get(card);
+    return finalColor == null ? "" : finalColor;
+}
+
+function getTextColorValue(card) {
+    let finalColor = spTextColorMap.get(card);
+    return finalColor == null ? "" : finalColor;
+}
+
 function generateAdminControls() {
 
     let contContainer = document.getElementById('controls');
@@ -175,9 +192,6 @@ function generateAdminControls() {
     if (child > 0) {
         contContainer.innerHTML = "";
     }
-
-    const controlsContainer = document.getElementById('controls');
-    const section = document.createElement('div')
 
     const controls =`
       <div class="btn-group">
@@ -199,9 +213,8 @@ function generateAdminControls() {
       </div>
     `;
 
-    section.innerHTML = controls
+    contContainer.innerHTML = controls
 
-    controlsContainer.appendChild(section);
 }
 
 function showDropdown() {
@@ -235,7 +248,6 @@ async function setDeckType(deck) {
             showTimedToast(results.message, 1);
         }
     }, (error) => {
-        console.log("setDeckType" + error);
         showTimedToast(error, 0);
     });
 }
@@ -258,8 +270,11 @@ function generateCardDeck() {
         let displayLabel = getSpValue(card);
 
         let setClass =  revealVote ? "card-deck-normal" : (cardSelected == card ? "card-deck-selected" : "card-deck-normal")
-        const cardItem =`
-            <div class=${setClass} onclick="cardClick(${card})">
+        let colorStyle = getColorValue(card) == '' ? "" : `style="background-color:${getColorValue(card)}; color:${getColorValue(card)}"`;
+
+
+        let cardItem =`
+            <div ${colorStyle} class=${setClass} onclick="cardClick('${card}')">
                 <div><span>${displayLabel}</span></div>
             </div>
         `;
@@ -337,8 +352,8 @@ subscription.on('create', (object) => {
 subscription.on('update', (object) => {
   console.log('object updated');
   if (object.get("admin")) {
-    revealVote = object.get("reveal")
-    deckType = object.get("deck")
+    revealVote = object.get("reveal");
+    deckType = object.get("deck");
   }else{
     for (var i = 0; i < onlineUsers.length; i++) {
         let o = onlineUsers[i];
@@ -412,11 +427,8 @@ subscription.on('close', () => {
 // };
 
 window.onload= function() {
-    console.log('1 - onblur');
     window.onfocus= function () {
-    console.log('2 - onfocus');
         if (!activeSubs) {
-            console.log('3 - onfocus > reload');
             location.reload();
         }
     }
