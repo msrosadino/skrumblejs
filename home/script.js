@@ -223,6 +223,9 @@ window.onclick = function(event) {
 
 async function setDeckType(deck) {
 
+    if (deck == deckType) {
+        return;
+    }
     const param = {one:roomName, two:yourId, three:deck};
     await Parse.Cloud.run("setDeckType", param).then((results)=>{
         if (!results.success) {
@@ -353,17 +356,21 @@ subscription.on('leave', (object) => {
 
 subscription.on('delete', (object) => {
   console.log('object deleted');
-  try {
-      for (var i = 0; i < onlineUsers.length; i++) {
-          let user = onlineUsers[i];
-          if (user.get('objectId') == object.get("objectId")) {
-            onlineUsers.splice(i, 1);
-            break;
-          }
-      }
-      loadOnlineUsers();
-  } catch (error) {
-    console.log(error);
+  if (object.get('admin') == true) {
+    window.location.href = '../index.html';
+  } else {
+    try {
+        for (var i = 0; i < onlineUsers.length; i++) {
+            let user = onlineUsers[i];
+            if (user.get('objectId') == object.get("objectId")) {
+                onlineUsers.splice(i, 1);
+                break;
+            }
+        }
+        loadOnlineUsers();
+    } catch (error) {
+        console.log(error);
+    }
   }
 });
 
