@@ -62,7 +62,7 @@ function getLocalData() {
     
     let result = new Map();
     let data = JSON.parse(localStorage.getItem('scrumble'));
-    console.log("LocalData: " + JSON.stringify(data));
+    // console.log("LocalData: " + JSON.stringify(data));
     
     for(var i in data){
         result.set(i, data[i]);

@@ -319,12 +319,17 @@ activeSubs = true;
 
 subscription.on('create', (object) => {
   console.log('object created');
+  let itContains = false;
   for (var i = 0; i < onlineUsers.length; i++) {
       let user = onlineUsers[i];
-      if (user.get('objectId') == object.get("objectId")) {
+      if (user.get('objectId') == object.get('objectId')) {
         onlineUsers[i] = object;
+        itContains = true;
         break;
       }
+  }
+  if (!itContains) {
+    onlineUsers.push(object);
   }
   loadOnlineUsers();
 });
