@@ -64,17 +64,28 @@ async function loadOnlineUsers() {
     
     const gridContainer = document.getElementById('online-user');
     gridContainer.innerHTML = "";
+
+    onlineUsers.forEach(function(obj) {
+        let onlineUser = JSON.parse(JSON.stringify(obj));
+        if (yourId === onlineUser.objectId) {
+            cardSelected = onlineUser.vote;
+        }
+    });
+
     for (let i = 0; i < onlineUsers.length; i++) {
-      const object = onlineUsers[i];
-      if (object.get('admin')) {
-        userId = object.get('objectId');
-        revealVote = object.get("reveal");
-        deckType = object.get("deck");
-        isAdmin = object.get("name").trim() == userName;
-        showDetails(object);
-        continue;
-      }
-      generateUserCard(object, gridContainer);
+
+        let user = JSON.parse(JSON.stringify(onlineUsers[i]));
+
+        if (user.admin) {
+            revealVote = user.reveal;
+            deckType = user.deck;
+            isAdmin = user.objectId === yourId;
+            showDetails(onlineUsers[i]);
+            continue;
+        }
+
+        generateUserCard(onlineUsers[i], gridContainer);
+
     }
 }
 
@@ -269,9 +280,9 @@ function generateCardDeck() {
         let card = deckData[i]
         let displayLabel = getSpValue(card);
 
+        let textSelectedColor = cardSelected == card ? `color:${getTextColorValue(card)}` : `color:${getColorValue(card)}` ;
         let setClass =  revealVote ? "card-deck-normal" : (cardSelected == card ? "card-deck-selected" : "card-deck-normal")
-        let colorStyle = getColorValue(card) == '' ? "" : `style="background-color:${getColorValue(card)}; color:${getColorValue(card)}"`;
-
+        let colorStyle = getColorValue(card) == '' ? "" : `style="background-color:${getColorValue(card)}; ${textSelectedColor}"`;
 
         let cardItem =`
             <div ${colorStyle} class=${setClass} onclick="cardClick('${card}')">
@@ -288,7 +299,7 @@ function generateCardDeck() {
 async function resetCards() {
     const param = {one:roomName}
     await Parse.Cloud.run("resetCardVote", param).then((results)=>{
-        showTimedToast(results.message, 1);
+        showTimedToast(results.message, 1);       
     }, (error)=>{
         showTimedToast(error, 1);
     });
@@ -352,8 +363,15 @@ subscription.on('create', (object) => {
 subscription.on('update', (object) => {
   console.log('object updated');
   if (object.get("admin")) {
-    revealVote = object.get("reveal");
-    deckType = object.get("deck");
+    
+    if (revealVote != object.get("reveal")) {
+        revealVote = object.get("reveal");
+        cardSelected = '';
+    }
+    if (deckType != object.get("deck")) {
+        deckType = object.get("deck");
+        cardSelected = '';
+    }
   }else{
     for (var i = 0; i < onlineUsers.length; i++) {
         let o = onlineUsers[i];

@@ -28,6 +28,8 @@ spTextColorMap.set('O', '#6b6570');
 spTextColorMap.set('V', 'white');
 spTextColorMap.set('R', 'white');
 
+const checkChar = '?';
+
 let toasts = document.getElementById('toasts');
 let errorTypes = ['info', 'success', 'error'];
 
