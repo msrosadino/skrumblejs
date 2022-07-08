@@ -297,11 +297,11 @@ function isUserExist() {
 }
 
 async function init() {
-    console.log(`${userName} * ${roomName} * ${yourId}`);
+    //console.log(`${userName} * ${roomName} * ${yourId}`);
     if (isUserExist()) {
         loadData();
     } else {
-        //window.location.href = '../index.html';
+        window.location.href = '../index.html';
     }
 
 }
