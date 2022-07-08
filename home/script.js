@@ -33,7 +33,7 @@ window.addEventListener('beforeunload', function (e) {
 // Database query ===================================================
 
 let Online = Parse.Object.extend("Online");
-let localData = getLocalData()
+let localData = getLocalData();
 let userName = localData.get('name');
 let roomName = localData.get('room');
 let yourId = localData.get('id');;
@@ -43,8 +43,6 @@ let deckType = 'standard';
 let deckData = [];
 let revealVote = false;
 let isAdmin = false;
-
-console.log("Home: " + JSON.stringify(localData));
 
 async function logoutUser() {
     let param = {one:roomName, two:yourId}
@@ -291,12 +289,15 @@ async function loadData() {
 }
 
 function isUserExist() {
+    userName = localStorage.getItem('name');
+    roomName = localStorage.getItem('room');
+    yourId = localStorage.getItem('id');
     return (userName != undefined && roomName != undefined && yourId != undefined) 
     && (userName.length > 0 && roomName.length > 0 && yourId.length > 0)
 }
 
 async function init() {
-    console.log(`>${userName}<>${roomName}<>${yourId}`);
+    console.log(`${userName} * ${roomName} * ${yourId}`);
     if (isUserExist()) {
         loadData();
     } else {
@@ -398,11 +399,12 @@ subscription.on('close', () => {
 //     }
 // };
 
-window.onblur= function() {
+window.onload= function() {
+    console.log('1 - onblur');
     window.onfocus= function () {
-    console.log('onblur');
+    console.log('2 - onfocus');
         if (!activeSubs) {
-            console.log('activeSubs - onblur');
+            console.log('3 - onfocus > reload');
             location.reload();
         }
     }

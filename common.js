@@ -44,9 +44,11 @@ function saveLocalData(room, name, id) {
         jsonData['name'] = name;
         jsonData['id'] = id;
         let data = JSON.stringify(jsonData);
-        // localStorage.setItem('scrumble', data);
-        let ec = new evercookie(); 
-        ec.set("scrumble", data); 
+        localStorage.setItem('scrumble', data);
+
+        localStorage.setItem('room', room);
+        localStorage.setItem('name', name);
+        localStorage.setItem('id', id);
     }catch(error) {
         console.log("saveLocalData: " + error);
     }
@@ -59,24 +61,13 @@ function clearLocalData() {
 function getLocalData() {
     
     let result = new Map();
-    let ec = new evercookie(); 
-    ec.get("id", function(value) { 
-        let data = JSON.parse(localStorage.getItem('scrumble'));
-        console.log("LocalData: " + JSON.stringify(data));
-        let result = new Map();
-        
-        for(var i in data){
-            result.set(i, data[i]);
-        }
-    });
-
-    // let data = JSON.parse(localStorage.getItem('scrumble'));
-    // console.log("LocalData: " + JSON.stringify(data));
-    // let result = new Map();
+    let data = JSON.parse(localStorage.getItem('scrumble'));
+    console.log("LocalData: " + JSON.stringify(data));
     
-    // for(var i in data){
-    //     result.set(i, data[i]);
-    // }
+    for(var i in data){
+        result.set(i, data[i]);
+    }
 
     return result;
 }
+
